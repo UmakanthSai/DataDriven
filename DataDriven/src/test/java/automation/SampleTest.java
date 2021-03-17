@@ -16,7 +16,6 @@ public class SampleTest {
 		for(int i=0; i<d.size(); i++) {
 			System.out.println(d.get(i));
 		}
-		
 
 	}
 
