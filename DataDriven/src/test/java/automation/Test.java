@@ -1,19 +1,24 @@
 package automation;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.util.NumberToTextConverter;
 import org.apache.poi.util.SystemOutLogger;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Test {
 
-	public static void main(String[] args) throws IOException {
-
+	public ArrayList<String> ExcelData(String sheetName, String columnName, String rowName ) throws IOException {
+ArrayList<String> data = new ArrayList<String>();
+		
 		//FileInputStream is a class which as power to read any file
 		FileInputStream file = new FileInputStream("D://uma//Study//DemoData.xlsx");
 		
@@ -24,7 +29,7 @@ public class Test {
 		
 		//Iterating to number of sheets to find required sheet
 		for(int i=0;i<sheets;i++) {
-			if(workbook.getSheetName(i).equalsIgnoreCase("DataDriven")) {
+			if(workbook.getSheetName(i).equalsIgnoreCase(sheetName)) {
 				XSSFSheet sheet = workbook.getSheetAt(i);//we have taken sheet access
 				
 				Iterator<Row> rows = sheet.iterator();//Iterating through row
@@ -33,7 +38,7 @@ public class Test {
 				int colIndex = 0;
 				while(cell.hasNext()) {
 					Cell value = cell.next();
-					if(value.getStringCellValue().equalsIgnoreCase("StepDefinition")) {
+					if(value.getStringCellValue().equalsIgnoreCase(columnName)) {
 					colIndex =	value.getColumnIndex();
 					}
 				}
@@ -42,16 +47,30 @@ public class Test {
 				while(rows.hasNext()) {
 					
 				Row r = rows.next();
-				if(r.getCell(colIndex).getStringCellValue().equalsIgnoreCase("Group B")) {
+				if(r.getCell(colIndex).getStringCellValue().equalsIgnoreCase(rowName)) {
 					
 					Iterator<Cell> c = r.cellIterator();
 					while(c.hasNext()) {
-						System.out.println( c.next().getStringCellValue());
+						Cell ce=c.next();
+						if(ce.getCellType()==CellType.STRING) {
+							data.add(ce.getStringCellValue());//passing into Array List
+						}
+						else {
+							//USing NumberToTextConverter from Apache.poi developers to convert numeric to string  
+							data.add(NumberToTextConverter.toText(ce.getNumericCellValue()));
+						}
 					}
 				}
 				}
 			}
 		}
+		return data;
+	}
+	
+	public static void main(String[] args) throws IOException {
+
+
+	
 		
 	}
 
